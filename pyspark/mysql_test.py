@@ -1,4 +1,4 @@
-
+#mysql.server start
 #mysql -u root -p
 #pass
 #USE job1
@@ -84,13 +84,13 @@ def pyspark_datagetter():
 	    .option("dbtable", "test2").option("user", "leroy")\
 	    .option("password", "jankans").load()
 
-	print(dataframe_mysql.columns)
+	#print(dataframe_mysql.columns)
 	rows = dataframe_mysql.select(col('name'),col('key')).collect()
 	final_list = []
 	for i in rows:
 	    final_list.append([i[0],i[1]])
 	name=dataframe_mysql.toPandas()
-	print(name["key"].sort_values())
+	#print(name["key"].sort_values())
 
 
 import mysql.connector
@@ -109,7 +109,7 @@ def makeuseremail(uname,email,password):
 	if counter!=0:
 		return "user taken"
 	query = ("INSERT INTO `job_usertable` (`username`, `password`, `creation`, `email`) VALUES (\'"+uname+"\', \'"+password+"\', CURRENT_TIMESTAMP, \'"+email+"\');")
-	print(query)
+	#print(query)
 	cursor = cnx.cursor(buffered=True)
 	cursor.execute(query)
 	cnx.commit()
@@ -152,7 +152,7 @@ import string
 def get_random_string(length):
     # choose from all lowercase letter
     letters = string.ascii_lowercase
-    print(letters)
+    #print(letters)
     result_str=""
     for x in range(length):
     	result_str=result_str+random.choice(letters)
@@ -191,8 +191,9 @@ def funtion_make_traid(username, password ,traid_money_type,traid_money_amount,r
 
 	amnountleft=money-traid_money_amount
 	if amnountleft>0:
-		print("we good")
-		print(amnountleft)
+		#print("we good")
+		#print(amnountleft)
+		pass
 	else:
 		return "nofunds"
 
@@ -317,7 +318,7 @@ def compleat_traid(user,password,traid_id):
 
 
 
-def user_acount(user):
+def user_acount(user,delininator):
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
                               host='localhost',
                               database='job1')
@@ -327,14 +328,44 @@ def user_acount(user):
 	cursor.execute(Q0)
 	cnx.commit()
 	for row in cursor:
-		outsting=outsting+row[0]+", "+str(row[1])+"\n"
+		outsting=outsting+row[0]+", "+str(row[1])+delininator
 	cnx.commit()
 	return outsting
 
 
 
+
+
 def log_traid(traid_id):
-	pass
+	cnx = mysql.connector.connect(user='leroy', password='jankans',
+                          host='localhost',
+                          database='job1')
+
+	sql=("SELECT `traid_mony_type`,`traid_request_type`,`traid_request_amount`,`traid_money_amount`,`buyer`,`user` FROM `traidtable` WHERE `traid_id` LIKE \'"+traid_id+"\';")
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	for row in cursor:
+		traid_mony_type=row[0]
+		traid_request_type=row[1]
+		traid_request_amount=row[2]
+		traid_money_amount=row[3]
+	reciveto_convert_amount=traid_money_amount/traid_request_amount
+	otherway=traid_request_amount/traid_money_amount
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -352,9 +383,9 @@ print(vals[0])
 
 print(compleat_traid("traid_uname3money","password1",vals[0]))
 
-myacount=user_acount("traid_uname3money")
+myacount=user_acount("traid_uname3money","\n")
 print(myacount)
 #pyspark_datagetter()
 
-
+print("done")
 
