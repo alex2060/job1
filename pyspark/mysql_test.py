@@ -7,7 +7,7 @@
 
 #CREATE TABLE `testdata` ( `testing` INT NOT NULL ) ENGINE = InnoDB;
 #INSERT INTO `testdata` (`testing`) VALUES ('6');
-#select * from testdata;
+#select * from conert;
 #CREATE TABLE `test2` ( `name` TEXT NOT NULL , `key` TEXT NOT NULL ) ENGINE = InnoDB;
 #INSERT INTO `test2` (`name`, `key`) VALUES ('hey', 'now');
 #INSERT INTO `test2` (`name`, `key`) VALUES ('we', 'go');
@@ -43,6 +43,11 @@
 
 
 #convertion rate money1, money2 , rate , base
+#CREATE TABLE `conert` ( `to_from` TEXT NOT NULL , `amount` FLOAT NOT NULL , PRIMARY KEY (`to_from`(248))) ENGINE = InnoDB; 
+
+#INSERT INTO `conert` (`to_from`, `amount`) VALUES ('money1_money2', '1');
+
+#INSERT INTO `conert` (`to_from`, `amount`) VALUES ('money2_money1', '1');
 
 
 
@@ -96,6 +101,8 @@ def pyspark_datagetter():
 import mysql.connector
 
 def makeuseremail(uname,email,password):
+	if uname=="NULL":
+		return "False_NO_NULL_user"
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
                               host='localhost',
                               database='job1')
@@ -130,6 +137,7 @@ def makeuseremail(uname,email,password):
 
 
 def usercheck(uname,password):
+
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
                               host='localhost',
                               database='job1')
@@ -160,6 +168,8 @@ def get_random_string(length):
 
 
 def usercheck_conect(uname,password,cnx):
+	if uname=="NULL":
+		return "False"
 	Q1=("SELECT * FROM `job_usertable` WHERE `username` LIKE \'"+uname+"\' AND `password` LIKE \'"+password+"\'")
 	cursor = cnx.cursor(buffered=True)
 	cursor.execute(Q1)
@@ -172,6 +182,8 @@ def usercheck_conect(uname,password,cnx):
 
 
 def funtion_make_traid(username, password ,traid_money_type,traid_money_amount,request_money_type,request_amount ):
+	if username=="NULL":
+		return "False_NO_NULL_user"
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
                               host='localhost',
                               database='job1')
@@ -214,6 +226,8 @@ def funtion_make_traid(username, password ,traid_money_type,traid_money_amount,r
 
 
 def compleat_traid(user,password,traid_id):
+	if user=="NULL":
+		return "False_NO_NULL_user"
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
                               host='localhost',
                               database='job1')
@@ -319,6 +333,8 @@ def compleat_traid(user,password,traid_id):
 
 
 def user_acount(user,delininator):
+	if user=="NULL":
+		return "False_NO_NULL_user"
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
                               host='localhost',
                               database='job1')
@@ -330,11 +346,72 @@ def user_acount(user,delininator):
 	for row in cursor:
 		outsting=outsting+row[0]+", "+str(row[1])+delininator
 	cnx.commit()
+	cnx.close()
+	return outsting
+
+
+
+def get_convertion(spot,cnx):
+	cnx = mysql.connector.connect(user='leroy', password='jankans',
+                          host='localhost',
+                          database='job1')
+
+	sql=("select `amount` from conert where `to_from` like \'"+spot+"\';")
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	cnx.commit()
+	for row in cursor:
+		outsting=row[0]
 	return outsting
 
 
 
 
+def reset_convertion():
+	cnx = mysql.connector.connect(user='leroy', password='jankans',
+                          host='localhost',
+                          database='job1')
+
+	sql=("UPDATE `conert` SET `amount` = '1' WHERE `conert`.`to_from` = 'money1_money2';")
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	cnx.commit()
+
+	sql=("UPDATE `conert` SET `amount` = '1' WHERE `conert`.`to_from` = 'money2_money1';")
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	cnx.commit()
+
+
+
+def print_convertions(delim):
+	cnx = mysql.connector.connect(user='leroy', password='jankans',
+                          host='localhost',
+                          database='job1')
+
+	return "money1_money2,"+str(get_convertion("money1_money2",cnx))+delim+"money2_money1"+","+str(get_convertion("money2_money1",cnx))
+
+
+def print_testid(traid_id):
+	cnx = mysql.connector.connect(user='leroy', password='jankans',
+                              host='localhost',
+                              database='job1')
+
+	is_user=usercheck_conect(user,password,cnx)
+	if is_user=="False":
+		return "wrong_username"
+
+	sql=("SELECT `traid_mony_type`,`traid_request_type`,`traid_request_amount`,`traid_money_amount`,`buyer`,`user` FROM `traidtable` WHERE `traid_id` LIKE \'"+traid_id+"\';")
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	for row in cursor:
+		traid_mony_type=row[0]
+		traid_request_type=row[1]
+		traid_request_amount=row[2]
+		traid_money_amount=row[3]
+		buyer=row[4]
+		reciver=row[5]
+	return "traid_mony_type:"+traid_mony_type+",traid_request_type:"+traid_request_type+",traid_request_amount:"+traid_request_amount+",buyer:"+buyer+",reciver:"+reciver
 
 def log_traid(traid_id):
 	cnx = mysql.connector.connect(user='leroy', password='jankans',
@@ -349,9 +426,75 @@ def log_traid(traid_id):
 		traid_request_type=row[1]
 		traid_request_amount=row[2]
 		traid_money_amount=row[3]
-	reciveto_convert_amount=traid_money_amount/traid_request_amount
-	otherway=traid_request_amount/traid_money_amount
-	
+
+	reciveto_convert_amount=(traid_money_amount/traid_request_amount+get_convertion(traid_mony_type+"_"+traid_request_type,cnx) )/2
+	otherway=(traid_request_amount/traid_money_amount+get_convertion(traid_mony_type+"_"+traid_request_type,cnx) )/2
+
+	sql=("UPDATE `conert` SET `amount` = \'"+str(reciveto_convert_amount)+"\' WHERE `conert`.`to_from` = \'"+traid_mony_type+"_"+traid_request_type+"\';")
+	print(sql)
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	cnx.commit()
+
+	sql=("UPDATE `conert` SET `amount` = \'"+str(otherway)+"\' WHERE `conert`.`to_from` = \'"+traid_request_type+"_"+traid_mony_type+"\';")
+	print(sql)
+	cursor = cnx.cursor(buffered=True)
+	cursor.execute(sql)
+	cnx.commit()
+
+	cnx.close()
+	return str(reciveto_convert_amount)+" "+str(otherway)
+
+
+
+
+
+
+def test():
+	reset_convertion();
+	testid=get_random_string(50)
+	test_if_dup_user=makeuseremail("u1","alex.haussmann@gmail.com","password1")
+
+	makeuseremail(testid+"u1","alex.haussmann@gmail.com","password1")
+	makeuseremail(testid+"u2","alex.haussmann@gmail.com","password2")
+	my_traid=funtion_make_traid(testid+"u1", "password1" ,"money1",1,"money2",2 )
+
+	vals = my_traid.split(" ")
+	print()
+
+	print("should be 999",vals[1])
+	print("traid pre convertions")
+	print(print_convertions("\n"))
+	print()
+
+	print("u1 pretriad")
+	print(user_acount(testid+"u1","\n"))
+	print()
+
+	print("u2 pretriad")
+	print(user_acount(testid+"u2","\n"))
+
+	output=compleat_traid(testid+"u2","password2",vals[0])
+	print()
+	print("traid")
+	print(output)
+	log_traid(vals[0])
+
+	print("traid post convertions")
+	print(print_convertions("\n"))
+	print()
+
+	print("u1 post triad")
+	print(user_acount(testid+"u1","\n"))
+	print()
+
+	print("u2 post triad")
+	print(user_acount(testid+"u2","\n"))
+	print()
+
+	print("to high traid")
+	fail=funtion_make_traid(testid+"u1", "password1" ,"money1",100000,"money2",20000 )
+	print(fail)
 
 
 
@@ -370,22 +513,9 @@ def log_traid(traid_id):
 
 
 
-print(makeuseremail("uname3money","email","password"))
-print(usercheck("uname1","password1"))
-my_traid=funtion_make_traid("uname3money", "password" ,"money1",1,"money2",2 )
-vals = my_traid.split(" ")
-print(vals)
-
-print(makeuseremail("traid_uname3money","email","password1"))
 
 
-print(vals[0])
 
-print(compleat_traid("traid_uname3money","password1",vals[0]))
 
-myacount=user_acount("traid_uname3money","\n")
-print(myacount)
-#pyspark_datagetter()
-
-print("done")
+test()
 
