@@ -5,16 +5,95 @@ from django.core.files import File
 # Create your views here.
 import number_to_english as conv
 
-
+import lets_convert
 from django.shortcuts import render
 
 def home(req):
-    import lets_convert
-    f = open("/Users/ahauss/Desktop/lbry/files/mysight/mysite/cash.txt", "r")
+    
+    f = open("to_be_frontend.html", "r")
     output= f.read()
-    print(output)
-    return HttpResponse( lets_convert.convert_back(output) )
-    #return render(req, 'numb/test.html')
+    f.close()
+    return HttpResponse( output )
+
+def add_traid(req):
+    f = open("to_be_frontend.html", "r")
+    output= f.read()
+    f.close()
+    return HttpResponse( output )
+
+def compleat_traid(req):
+    f = open("to_be_frontend.html", "r")
+    output= f.read()
+    f.close()
+    return HttpResponse( output )
+
+def print_convertion(req):
+    f = open("to_be_frontend.html", "r")
+    output= f.read()
+    f.close()
+    return HttpResponse( output )
+
+def print_user(req):
+    f = open("to_be_frontend.html", "r")
+    output= f.read()
+    f.close()
+    return HttpResponse( output )
+
+
+def doit():
+    action_type=""
+    try:
+        action_type=req.GET["action_type"]
+    except:
+        action_type=""
+
+    user=""
+    try:
+        user=req.GET["user"]
+    except:
+        user=""
+
+    password=""
+    try:
+        password=req.GET["password"]
+    except:
+        pass
+
+
+    traid_id=""
+    try:
+        traid_id=req.GET["traid_id"]
+    except:
+        pass
+
+    request_amound=""
+    try:
+        request_amound=req.GET["request_amound"]
+    except:
+        pass
+
+    request_type=""
+    try:
+        request_type=req.GET["request_type"]
+    except:
+        pass
+
+
+    send_type=""
+    try:
+        send_type=req.GET["send_type"]
+    except:
+        pass
+
+    send_amount=""
+    try:
+        send_amount=req.GET["send_amount"]
+    except:
+        pass
+
+
+
+
 
 
 def post(req):
