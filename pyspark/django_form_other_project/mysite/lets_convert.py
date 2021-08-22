@@ -1,0 +1,30 @@
+
+
+
+
+
+
+def convert(value):
+	value = value.replace("<" , "(???!!!1!!!!???)")
+	value = value.replace(">" , "(???!!!2!!!!???)")
+	value = value.replace("/" , "(???!!!3!!!!???)")
+	value = value.replace("\"", "(???!!!4!!!!???)")
+	value = value.replace("\n", "(???!!!5!!!!???)")
+	return value
+
+
+def convert_back(value):
+	value = value.replace("(???!!!1!!!!???)", "<" )
+	value = value.replace("(???!!!2!!!!???)", ">" )
+	value = value.replace("(???!!!3!!!!???)", "/" )
+	value = value.replace("(???!!!4!!!!???)", "\"")
+	value = value.replace("(???!!!5!!!!???)", "\n")
+	return value
+
+
+
+
+
+
+
+
