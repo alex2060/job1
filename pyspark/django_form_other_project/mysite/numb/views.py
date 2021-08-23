@@ -30,7 +30,7 @@ def compleat_traid(req):
     return HttpResponse( output )
 
 def print_convertion(req):
-    f = open("to_be_frontend_check_transaction.html.html", "r")
+    f = open("transaction.html", "r")
     output= f.read()
     f.close()
     return HttpResponse( output )
